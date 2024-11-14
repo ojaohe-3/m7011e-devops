@@ -4,19 +4,50 @@ services:
   db:
     image: postgres
     restart: always
-    # set shared memory limit when using docker-compose
     shm_size: 128mb
-    # or set shared memory limit when deploy via swarm stack
-    #volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_PASSWORD: example
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 8089:8080
+  reposilite:
+      image: dzikoysk/reposilite:3.2.0
+      ports:
+        - 9000:8080
+      env_file:
+        - .env
+      environment:
+        - JAVA_OPTS=-Xmx256M
+        - REPOSILITE_OPTS=--port 8080
+      volumes:
+        - reposilite-data:/app/data
+      restart: unless-stopped
+      stdin_open: true
+      tty: true
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: secret
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+    ports:
+      - "8090:8080"
+    command: start-dev
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  reposilite-data: {}
