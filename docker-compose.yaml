@@ -31,6 +31,17 @@ services:
       restart: unless-stopped
       stdin_open: true
       tty: true
+
+  redis:
+    image: docker.io/bitnami/redis:7.4
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     environment:
@@ -51,3 +62,5 @@ services:
 volumes:
   postgres-data:
   reposilite-data: {}
+  redis_data:
+    driver: local
