@@ -1,0 +1,171 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: docker.io/bitnami/redis:7.4
+    restart: always
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    volumes:
+      - ./imports:/opt/jboss/keycloak/imports
+    environment:
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: secret
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+    ports:
+      - "8090:8080"
+    command: start-dev --import-realm
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  event-log:
+    image: ojaohe/m7011e.the-homeric-odyssey.event-log:1.0.2
+    ports:
+      - "9001:8080"
+    env_file: "./envs/keycloakEnvs.env"
+    environment:
+      DATASOURCE_PASSWORD: example
+      DATASOURCE_URL: jdbc:postgresql://db:5432/event-log
+      DATASOURCE_USERNAME: postgres
+      KEYCLOAK_CLIENT_ID: auth-server-client
+      KEYCLOAK_BASE_URL: http://localhost/realms/The-Homeric-Odyssey-Vendor
+      KEYCLOAK_BASE_JWK: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/certs
+      AUTH_SERVER_URL: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token
+      KEYCLOAK_CLIENT_SECRET: Y9zA2dnuBLrenro4uKEGQQRyjCDPUwAX
+      SYSTEM_USERNAME: admin
+      SYSTEM_PASSWORD: admin123
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  registry:
+    image: ojaohe/m7011e.the-homeric-odyssey.registry:1.1.1
+    ports:
+      - "9002:8080"
+    env_file: "./envs/keycloakEnvs.env"
+    environment:
+      DATASOURCE_PASSWORD: example
+      DATASOURCE_URL: jdbc:postgresql://db:5432/registry
+      DATASOURCE_USERNAME: postgres
+      KEYCLOAK_CLIENT_ID: auth-server-client
+      KEYCLOAK_BASE_URL: http://localhost/realms/The-Homeric-Odyssey-Vendor
+      KEYCLOAK_BASE_JWK: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/certs
+      AUTH_SERVER_URL: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token
+      KEYCLOAK_CLIENT_SECRET: Y9zA2dnuBLrenro4uKEGQQRyjCDPUwAX
+      SYSTEM_USERNAME: admin
+      SYSTEM_PASSWORD: admin123
+      EVENT_LOG_URL: http://event-log:8080
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  core:
+    image: ojaohe/m7011e.the-homeric-odyssey.core:1.2.4
+    ports:
+      - "9003:8080"
+    environment:
+      DATASOURCE_PASSWORD: example
+      DATASOURCE_URL: jdbc:postgresql://db:5432/core-app
+      DATASOURCE_USERNAME: postgres
+      KEYCLOAK_CLIENT_ID: auth-server-client
+      KEYCLOAK_BASE_URL: http://localhost/realms/The-Homeric-Odyssey-Vendor
+      KEYCLOAK_BASE_JWK: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/certs
+      AUTH_SERVER_URL: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token
+      KEYCLOAK_CLIENT_SECRET: Y9zA2dnuBLrenro4uKEGQQRyjCDPUwAX
+      SYSTEM_USERNAME: admin
+      SYSTEM_PASSWORD: admin123
+      EVENT_LOG_URL: http://event-log:8080
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - keycloak
+      - event-log
+      - registry
+      - core
+    restart: always
+
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+#    environment:
+#      - discovery.type=single-node
+#      - xpack.security.enabled=false
+#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+#    volumes:
+#      - elasticsearch_data:/usr/share/elasticsearch/data
+#    ports:
+#      - "9200:9200"
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:8.12.0
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - "5601:5601"
+#    depends_on:
+#      - elasticsearch
+#
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:8.12.0
+#    volumes:
+#      - ./logstash/pipeline:/usr/share/logstash/pipeline
+#      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+#    ports:
+#      - "5044:5044"
+#      - "5000:5000/tcp"
+#      - "5000:5000/udp"
+#      - "9600:9600"
+#    depends_on:
+#      - elasticsearch
+
+volumes:
+  postgres-data:
+  elasticsearch_data:
+  reposilite-data: { }
+  redis_data:
+    driver: local
