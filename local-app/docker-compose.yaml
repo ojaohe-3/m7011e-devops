@@ -91,7 +91,7 @@ services:
         max-file: "3"
 
   core:
-    image: ojaohe/m7011e.the-homeric-odyssey.core:1.2.4
+    image: ojaohe/m7011e.the-homeric-odyssey.core:1.1.1-SNAPSHOT-demo-2
     ports:
       - "9003:8080"
     environment:
