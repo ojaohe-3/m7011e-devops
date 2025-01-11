@@ -65,10 +65,10 @@ KEYCLOAK_CLIENT_SECRET=<secret>
 In order for the application to access its own user it needs to be created
 go to keycloak panel, go into the-homeric-odyssey realm and select users in the left navigation bar
 ![image](https://github.com/user-attachments/assets/c1fdf848-3f0a-437e-b60c-7d7713fdfe96)
-Create new user
-Default is admin
-rest of the info is optional
-here is a working example:
+Create new user system users, remember join group systems in the bottom.
+Default system username is configured to be 'admin' and password 'admin123' so we defere to that for this example
+Other info is optional for the system.
+here is a working example :
 ![image](https://github.com/user-attachments/assets/ccc9858a-8b73-4dcb-8519-6da36fee7c50)
 Lastly give it a password by selecting 'credentials' in the top navigation bar
 create a non temporary password, default setup with the solution is admin123.
@@ -82,6 +82,29 @@ If you selected temporary password, you need to register the user, it can be don
 
 ![image](https://github.com/user-attachments/assets/7357a4de-ea90-4c20-beae-5ea02eab437d)
 
+Lastly you can try to log in using this command
+```bash
+curl --location 'http://localhost:8090/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--data-urlencode 'username=admin' \
+--data-urlencode 'password=admin123' \
+--data-urlencode 'client_id=auth-server-client' \
+--data-urlencode 'client_secret=<client-secret-you-generated>' \
+--data-urlencode 'scope=openid' \
+--data-urlencode 'grant_type=password'
+```
+if you get an access_token you can copy it and past it in jwt.io and it should contain the following:
+![image](https://github.com/user-attachments/assets/bc268d59-7f80-422b-bdea-315e8f8a6559)
+if not the role will not map to system user so it is important.
 
+### Creating any other users 
+To create any other users you can simply do the previous step, just select a different goup to join.
+e.g. vendor.
+Scope id will give access to that scope in the application.
+---
+
+## Testing application
+You likley need to down the docker-compose.yaml after all setup is completed
+but after you restart you should be able to access the open api
 
 
