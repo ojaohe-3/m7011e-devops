@@ -37,6 +37,7 @@ password: admin
 
 ### Setup realm
 For initial setup it is not sufficient to create a realm
+![image](https://github.com/user-attachments/assets/980916c1-30a6-4247-b883-4eec90faa3d0)
 
 
 
