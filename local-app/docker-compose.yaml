@@ -54,13 +54,6 @@ services:
       DATASOURCE_PASSWORD: example
       DATASOURCE_URL: jdbc:postgresql://db:5432/event-log
       DATASOURCE_USERNAME: postgres
-      KEYCLOAK_CLIENT_ID: auth-server-client
-      KEYCLOAK_BASE_URL: http://localhost/realms/The-Homeric-Odyssey-Vendor
-      KEYCLOAK_BASE_JWK: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/certs
-      AUTH_SERVER_URL: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token
-      KEYCLOAK_CLIENT_SECRET: Y9zA2dnuBLrenro4uKEGQQRyjCDPUwAX
-      SYSTEM_USERNAME: admin
-      SYSTEM_PASSWORD: admin123
     logging:
       driver: "json-file"
       options:
@@ -76,13 +69,6 @@ services:
       DATASOURCE_PASSWORD: example
       DATASOURCE_URL: jdbc:postgresql://db:5432/registry
       DATASOURCE_USERNAME: postgres
-      KEYCLOAK_CLIENT_ID: auth-server-client
-      KEYCLOAK_BASE_URL: http://localhost/realms/The-Homeric-Odyssey-Vendor
-      KEYCLOAK_BASE_JWK: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/certs
-      AUTH_SERVER_URL: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token
-      KEYCLOAK_CLIENT_SECRET: Y9zA2dnuBLrenro4uKEGQQRyjCDPUwAX
-      SYSTEM_USERNAME: admin
-      SYSTEM_PASSWORD: admin123
       EVENT_LOG_URL: http://event-log:8080
     logging:
       driver: "json-file"
@@ -98,13 +84,6 @@ services:
       DATASOURCE_PASSWORD: example
       DATASOURCE_URL: jdbc:postgresql://db:5432/core-app
       DATASOURCE_USERNAME: postgres
-      KEYCLOAK_CLIENT_ID: auth-server-client
-      KEYCLOAK_BASE_URL: http://localhost/realms/The-Homeric-Odyssey-Vendor
-      KEYCLOAK_BASE_JWK: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/certs
-      AUTH_SERVER_URL: http://keycloak:8080/realms/The-Homeric-Odyssey-Vendor/protocol/openid-connect/token
-      KEYCLOAK_CLIENT_SECRET: Y9zA2dnuBLrenro4uKEGQQRyjCDPUwAX
-      SYSTEM_USERNAME: admin
-      SYSTEM_PASSWORD: admin123
       EVENT_LOG_URL: http://event-log:8080
     logging:
       driver: "json-file"

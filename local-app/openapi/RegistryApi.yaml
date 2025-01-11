@@ -1,0 +1,114 @@
+openapi: "3.1.0"
+info:
+  title: "registry API"
+  description: "registry API"
+  version: "1.0.0"
+servers:
+  - url: "https://registry"
+tags:
+  - name: "Registry"
+paths:
+  /users/:
+    get:
+      summary: "Get a user by Email"
+      description: ""
+      operationId: ""
+      parameters:
+        - name: "email"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+    post:
+      summary: "Create a new user"
+      description: ""
+      operationId: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+  /users/{id}:
+    get:
+      summary: "Get a user by ID"
+      description: ""
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+    put:
+      summary: "Update a user by ID"
+      description: ""
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+components:
+  schemas:
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int32"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        email:
+          type: "string"
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        phoneNumber:
+          type: "string"
+        userType:
+          type: "string"
+          enum:
+            - "VENDOR"
+            - "CUSTOMER"
+            - "ADMIN"
+            - "SYSTEM"
+        scopeId:
+          type: "string"
+          format: "uuid"
+        sub:
+          type: "string"
+          format: "uuid"

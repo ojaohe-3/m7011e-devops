@@ -1,0 +1,137 @@
+openapi: "3.1.0"
+info:
+  title: "event_log API"
+  description: "event_log API"
+  version: "1.0.0"
+servers:
+  - url: "https://event_log"
+tags:
+  - name: "Events"
+paths:
+  /vendor-events:
+    post:
+      summary: "Create a new vendor event"
+      description: "Creates a new vendor event and returns the created event with\
+        \ generated ID"
+      operationId: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VendorEvent"
+  /vendor-events/{id}:
+    put:
+      summary: "Update an existing vendor event"
+      description: "Updates an existing vendor event using optimistic locking with\
+        \ version number"
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Event ID"
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "If-Match"
+          in: "header"
+          required: true
+          description: "Event version for optimistic locking"
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/VendorEvent"
+    delete:
+      summary: "Delete a vendor event"
+      description: "Deletes an existing vendor event by ID"
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Event ID to delete"
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Void"
+components:
+  schemas:
+    MetaData:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int32"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        value:
+          type: "string"
+    VendorEvent:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int32"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        issuerUserId:
+          type: "string"
+          format: "uuid"
+        issuerUsername:
+          type: "string"
+        eventMessage:
+          type: "string"
+        eventType:
+          type: "string"
+          enum:
+            - "PURCHASED"
+            - "DELIVERED"
+            - "PLACED"
+            - "PAYED"
+            - "PRIORITY"
+            - "CREATED"
+            - "UPDATED"
+            - "MODIFIED"
+            - "CANCELED"
+            - "FAILED"
+        targetUserId:
+          type: "string"
+          format: "uuid"
+        targetProductId:
+          type: "string"
+          format: "uuid"
+        metaData:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/MetaData"
+    Void:
+      type: "object"
+      properties: { }

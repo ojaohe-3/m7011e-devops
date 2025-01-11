@@ -1,0 +1,673 @@
+openapi: "3.1.0"
+info:
+  title: "core API"
+  description: "core API"
+  version: "1.0.0"
+servers:
+  - url: "https://core"
+tags:
+  - name: "Orders"
+    description: "Order management API endpoints"
+  - name: "Products"
+    description: "Product management API endpoints"
+  - name: "Cart"
+    description: "Cart management API endpoints"
+paths:
+  /orders/{orderId}:
+    put:
+      summary: "Update existing order"
+      description: "Updates an order with the provided details"
+      operationId: ""
+      parameters:
+        - name: "orderId"
+          in: "path"
+          required: true
+          description: "Order ID"
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "If-Match"
+          in: "header"
+          required: true
+          description: "Current version of the order"
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Order"
+    get:
+      summary: "Get order"
+      description: "Retrieves a specific order by ID"
+      operationId: ""
+      parameters:
+        - name: "orderId"
+          in: "path"
+          required: true
+          description: "Order ID"
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Order"
+  /orders/{orderId}/status:
+    put:
+      summary: "Update order status"
+      description: "Updates the status of an existing order. Uses optimistic locking\
+        \ with version check."
+      operationId: ""
+      parameters:
+        - name: "orderId"
+          in: "path"
+          required: true
+          description: "Order ID"
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "If-Match"
+          in: "header"
+          required: true
+          description: "Current version of the order"
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderStatusUpdateCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Order"
+  /orders:
+    post:
+      summary: "Create new order"
+      description: "Places a new order with the provided details"
+      operationId: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Order"
+    get:
+      summary: "List orders"
+      description: "Retrieves a paginated list of orders with optional filtering"
+      operationId: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Order"
+  /orders/{orderId}/cancel:
+    post:
+      summary: "Cancel order"
+      description: "Cancels a specific order by ID. Uses optimistic locking with version\
+        \ check."
+      operationId: ""
+      parameters:
+        - name: "orderId"
+          in: "path"
+          required: true
+          description: "Order ID"
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "If-Match"
+          in: "header"
+          required: true
+          description: "Current version of the order"
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Order"
+  /products/{id}:
+    put:
+      summary: "Update product"
+      description: "Updates an existing product with the provided details. Uses optimistic\
+        \ locking with version check."
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Product ID"
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "If-Match"
+          in: "header"
+          required: true
+          description: "Current version of the product"
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdateCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Product"
+    delete:
+      summary: "Delete product"
+      description: "Deletes a specific product by ID. Uses optimistic locking with\
+        \ version check."
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Product ID"
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "If-Match"
+          in: "header"
+          required: true
+          description: "Current version of the product"
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Void"
+    get:
+      summary: "Get product"
+      description: "Retrieves a specific product by ID"
+      operationId: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "Product ID"
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Product"
+  /products:
+    post:
+      summary: "Create new product"
+      description: "Creates a new product with the provided details"
+      operationId: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Product"
+    get:
+      summary: "List products"
+      description: "Retrieves a paginated list of products with optional filtering"
+      operationId: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Product"
+  /carts/{itemId}:
+    put:
+      summary: "PUT carts/{itemId}"
+      operationId: "updateCartItem"
+      parameters:
+        - name: "itemId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CartItem"
+  /carts:
+    post:
+      summary: "POST carts"
+      operationId: "addToCart"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartCommand"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CartItem"
+  /carts/{sub}/{itemId}:
+    get:
+      summary: "GET carts/{sub}/{itemId}"
+      operationId: "getCartItem"
+      parameters:
+        - name: "sub"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "itemId"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CartItem"
+  /carts/{sub}:
+    get:
+      summary: "GET carts/{sub}"
+      operationId: "getAllCartItems"
+      parameters:
+        - name: "sub"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/CartItem"
+components:
+  schemas:
+    OrderCreateCommand:
+      type: "object"
+      properties:
+        productId:
+          type: "string"
+          format: "uuid"
+        status:
+          type: "string"
+          enum:
+            - "PENDING"
+            - "PAID"
+            - "PROCESSING"
+            - "SHIPPED"
+            - "DELIVERED"
+            - "PLACED"
+            - "CANCELLED"
+        quantity:
+          type: "integer"
+          format: "int32"
+        shippingAddress:
+          type: "string"
+        billingAddress:
+          type: "string"
+        contactEmail:
+          type: "string"
+        contactPhone:
+          type: "string"
+        paymentMethod:
+          type: "string"
+        paymentDetails:
+          type: "string"
+        paymentStatus:
+          type: "string"
+        transactionId:
+          type: "string"
+        paidAt:
+          type: "string"
+          format: "date-time"
+        shippedAt:
+          type: "string"
+          format: "date-time"
+        deliveredAt:
+          type: "string"
+          format: "date-time"
+        cancelledAt:
+          type: "string"
+          format: "date-time"
+    Order:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int64"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        sub:
+          type: "string"
+          format: "uuid"
+        status:
+          type: "string"
+          enum:
+            - "PENDING"
+            - "PAID"
+            - "PROCESSING"
+            - "SHIPPED"
+            - "DELIVERED"
+            - "PLACED"
+            - "CANCELLED"
+        productId:
+          type: "string"
+          format: "uuid"
+        quantity:
+          type: "integer"
+          format: "int32"
+        totalPrice:
+          type: "number"
+          format: "double"
+        shippingAddress:
+          type: "string"
+        billingAddress:
+          type: "string"
+        contactEmail:
+          type: "string"
+        contactPhone:
+          type: "string"
+        paymentMethod:
+          type: "string"
+        paymentStatus:
+          type: "string"
+        transactionId:
+          type: "string"
+        paidAt:
+          type: "string"
+          format: "date-time"
+        shippedAt:
+          type: "string"
+          format: "date-time"
+        deliveredAt:
+          type: "string"
+          format: "date-time"
+        cancelledAt:
+          type: "string"
+          format: "date-time"
+    OrderStatusUpdateCommand:
+      type: "object"
+      properties:
+        newStatus:
+          type: "string"
+          enum:
+            - "PENDING"
+            - "PAID"
+            - "PROCESSING"
+            - "SHIPPED"
+            - "DELIVERED"
+            - "PLACED"
+            - "CANCELLED"
+    Resource:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int64"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        value:
+          type: "string"
+        resourceId:
+          type: "string"
+      required:
+        - "value"
+    ProductUpdateCommand:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        status:
+          type: "string"
+          enum:
+            - "AVAILABLE"
+            - "NOT_AVAILABLE"
+            - "PENDING"
+            - "PREORDER"
+            - "EMPTY"
+            - "OUT_OF_STOCK"
+        price:
+          type: "number"
+          format: "double"
+        categories:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Resource"
+        documents:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Resource"
+        displayImage:
+          type: "string"
+        companyLogo:
+          type: "string"
+        contactEmail:
+          type: "string"
+        contactPhone:
+          type: "string"
+        contactFax:
+          type: "string"
+        contactWebsite:
+          type: "string"
+        contactAddress:
+          type: "string"
+    Product:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int64"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+        name:
+          type: "string"
+        description:
+          type: "string"
+        price:
+          type: "number"
+          format: "double"
+        status:
+          type: "string"
+          enum:
+            - "AVAILABLE"
+            - "NOT_AVAILABLE"
+            - "PENDING"
+            - "PREORDER"
+            - "EMPTY"
+            - "OUT_OF_STOCK"
+        categories:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Resource"
+        documents:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Resource"
+        displayImage:
+          type: "string"
+        companyLogo:
+          type: "string"
+        contactEmail:
+          type: "string"
+        contactPhone:
+          type: "string"
+        contactFax:
+          type: "string"
+        contactWebsite:
+          type: "string"
+        contactAddress:
+          type: "string"
+        sub:
+          type: "string"
+          format: "uuid"
+    ProductCreateCommand:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        price:
+          type: "number"
+          format: "double"
+        status:
+          type: "string"
+          enum:
+            - "AVAILABLE"
+            - "NOT_AVAILABLE"
+            - "PENDING"
+            - "PREORDER"
+            - "EMPTY"
+            - "OUT_OF_STOCK"
+        categories:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Resource"
+        documents:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Resource"
+        displayImage:
+          type: "string"
+        companyLogo:
+          type: "string"
+        contactEmail:
+          type: "string"
+        contactPhone:
+          type: "string"
+        contactFax:
+          type: "string"
+        contactWebsite:
+          type: "string"
+        contactAddress:
+          type: "string"
+    Void:
+      type: "object"
+      properties: { }
+    CartCommand:
+      type: "object"
+      properties:
+        product:
+          $ref: "#/components/schemas/Product"
+        quantity:
+          type: "integer"
+          format: "int32"
+        price:
+          type: "number"
+          format: "double"
+        sub:
+          type: "string"
+          format: "uuid"
+    CartItem:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+        version:
+          type: "integer"
+          format: "int64"
+        product:
+          $ref: "#/components/schemas/Product"
+        quantity:
+          type: "integer"
+          format: "int32"
+        price:
+          type: "number"
+          format: "double"
+        sub:
+          type: "string"
+          format: "uuid"
