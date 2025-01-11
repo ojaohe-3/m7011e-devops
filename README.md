@@ -36,8 +36,52 @@ username: admin
 password: admin
 
 ### Setup realm
-For initial setup it is not sufficient to create a realm
+For initial setup we need to create the realm. Fortunatly everything should already be created and we will import the configurations from a json file which should be in ./local-apps/imports/realms-export.json
+to import the realm first create one by selecting realms in the top left corner as shown in the image
 ![image](https://github.com/user-attachments/assets/980916c1-30a6-4247-b883-4eec90faa3d0)
+Then select create realm
+![image](https://github.com/user-attachments/assets/7b4d1280-e42f-4f8d-bac2-a7d0a93fac55)
+You can drag and drop the json file into the browser or select browse in the top right corner of the center text box
+result should look something like this
+![image](https://github.com/user-attachments/assets/7107297c-e027-4700-92cf-ae582eedc9c0)
+Press create to setup the realm.
+
+### Setup clients
+By default client credentials might not match what is configured in the docker-composefile for the envs
+We have to reset the credentials for the clients
+Go to clients in keycloak, select the ```auth-server-client```
+![image](https://github.com/user-attachments/assets/35bda823-adf8-4722-aacb-43394cb14cff)
+Go to credential in the navigation bar at the top
+![image](https://github.com/user-attachments/assets/f706937f-cfe9-4c76-8810-ef5003469daf)
+Regenerate client secret and copy
+Copy the key and paste it in the secret enviormental variable in ./local-app/envs/keycloakEnvs.env as such:
+```
+...
+KEYCLOAK_CLIENT_SECRET=<secret>
+...
+```
+
+### Setup system user
+In order for the application to access its own user it needs to be created
+go to keycloak panel, go into the-homeric-odyssey realm and select users in the left navigation bar
+![image](https://github.com/user-attachments/assets/c1fdf848-3f0a-437e-b60c-7d7713fdfe96)
+Create new user
+Default is admin
+rest of the info is optional
+here is a working example:
+![image](https://github.com/user-attachments/assets/ccc9858a-8b73-4dcb-8519-6da36fee7c50)
+Lastly give it a password by selecting 'credentials' in the top navigation bar
+create a non temporary password, default setup with the solution is admin123.
+Make sure the login coincides with what is configured in the configured values in ./local-app/envs/keycloakEnvs.env as such:
+```
+...
+SYSTEM_USERNAME=admin
+SYSTEM_PASSWORD=admin123
+```
+If you selected temporary password, you need to register the user, it can be done via keycloak email registry, but this is not setup by default.
+
+![image](https://github.com/user-attachments/assets/7357a4de-ea90-4c20-beae-5ea02eab437d)
+
 
 
 
